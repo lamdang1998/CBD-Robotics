@@ -1,0 +1,36 @@
+from random import randint
+questions = {
+    "strong" : "Do yer like yer drink strong?",
+    "salty" : "Do ye like it with a salty tang?",
+    "bitter" : "Are ye a lumber who likes it bitter?",
+    "sweet" : "Would you like a bit of sweetness with yer poison?",
+    "fruity" : "Are ye one for a fruity finish?"
+}
+
+ingredients = {
+    "strong" : ["slug of rum", "slug of whiskey", "splash of gin"],
+    "salty" : ["olive on a stick", "salt-dusted rim", "rasher of bacon"],
+    "bitter": ["shake of bitter", "splash of tonic", "twist of lemon peel"],
+    "sweet" : ["sugar cube", "spoonful of honey", "spash of cola"],
+    "fruity" : ["slice of orange", "dash of cassis", "cherry on top"]
+}
+
+def getIngredient(taste):
+    #Return the random ingredient for a taste
+    i = randint(0,2)
+    return (ingredients[taste][i])
+
+def main():
+    for key in questions:
+        while True:    #Redo the loop if input is wrong
+            print(questions[key])
+            print("Y/N?")  #Ask for user's input
+            x = input()
+            if x == "Y" or x == "y": #Return Ingredient
+                print(getIngredient(key))
+                break
+            elif x == "N" or x == "n": #Ask another question
+                break
+            else:
+                print("Invalid Input. Try again!") #Invalid Input, ask for input again
+                continue
