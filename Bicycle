@@ -1,0 +1,88 @@
+class Bicycle:
+    def __init__(self, model, weight, cost):
+        self.model = model
+        self.weight = weight
+        self.cost = cost
+    def getCost(self, model):
+        return getattr(model , self.cost)
+    def getName(self,bicycle):
+        return bicycle.model
+
+class Shop(Bicycle):
+    def __init__(self, sname, inventory, margin):
+        self.sname = sname
+        self.inventory = inventory
+        self.margin = margin
+        self.profit = 0
+    def sell(self, bicycle):
+        if self.inventory[bicycle] == 0:
+            print(" This model is out of stock")
+        else:
+            self.profit += bicycle.cost * (self.margin/100)
+            self.inventory[bicycle] -= 1
+            print("Purchase completed")
+    def getInventory(self):
+        if self.inventory == False:
+            print("There is nothing in the shop")
+        else:
+            for key in self.inventory:
+                print("For " + key.model + ", we have " +str(self.inventory[key])+ " left")
+
+class Customer:
+    def __init__(self,name, fund):
+        self.name = name
+        self.fund = fund
+        self.bike = None
+    def buy(self, bicycle, shop):
+        if bicycle.cost > self.fund:
+            print("You don't have enough money to buy")
+        else:
+            shop.sell(bicycle)
+            self.bike = bicycle
+            self.fund -= ((bicycle.cost + bicycle.cost * (shop.margin/100)))
+            print(self.name + " now have a " + bicycle.model)
+    def affordable(self, shop):
+        afford = []
+        for bicycle in shop.inventory:
+            if self.fund > (bicycle.cost + bicycle.cost * (shop.margin/100)):
+                afford.append(bicycle.model)
+        if len(afford) == 0:
+            print("You can't afford any")
+        else:
+            print(afford)
+#Test
+#Creating Objects:
+Giant = Bicycle("Giant", 10, 1000)
+Trek = Bicycle("Trek", 11, 400)
+Specialized = Bicycle("Specialized", 4, 560)
+Scott = Bicycle("Scott", 6, 789)
+Cannondale = Bicycle("Cannondale", 8, 100)
+Bianchi = Bicycle("Bianchi", 9, 500)
+
+y = Shop("Cu li", {Giant : 1 , Trek : 2 , Specialized : 3 , Scott : 4 , Cannondale : 5 , Bianchi : 6}, 20)
+
+Lam = Customer("Lam",500)
+Long = Customer("Long",100)
+Ha = Customer("Ha",10000)
+
+#Bike models that a ccustomer can afford
+print(Lam.name)
+Lam.affordable(y)
+print(Long.name)
+Long.affordable(y)
+print(Ha.name)
+Ha.affordable(y)
+print("")
+
+#Get inventory
+y.getInventory()
+print("")
+#Get 3 customers to buy 3 bikes
+Lam.buy(Bianchi, y)
+Long.buy(Cannondale, y)
+Ha.buy(Giant, y)
+print("")
+#print inventory and profit left
+y.getInventory()
+print("")
+print("The store profit from the sales is " +str(y.profit))
