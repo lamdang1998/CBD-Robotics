@@ -82,6 +82,7 @@ Lam.buy(Bianchi, y)
 Long.buy(Cannondale, y)
 Ha.buy(Giant, y)
 print("")
+
 #print inventory and profit left
 y.getInventory()
 print("")
