@@ -1,0 +1,68 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+#from sqlalchemy import Column, Integer,String,ForeignKey
+from datetime import datetime
+app = Flask(__name__)
+app.config.from_pyfile('config.cfg')
+
+db = SQLAlchemy(app)
+
+auction_table = db.Table("auction_table",
+    db.Column('user_id',db.Integer, db.ForeignKey("user.id")),
+    db.Column('item_id',db.Integer, db.ForeignKey("item.item_id")),
+    #db.Column('auction_money',db.Integer, db.ForeignKey('User.auction_money'))
+)
+
+class User(db.Model):
+    __tablename = "user"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String)
+    password = db.Column(db.String)
+    auctioning = db.relationship("Item", secondary=auction_table, backref=db.backref('auctioner',uselist = False), primaryjoin="auction_table.c.user_id == User.id")
+    auction_money = db.Column(db.Integer)
+    def __init__(self,user_id,username,password,auction_money):
+        self.user_id = user_id
+        self.username = username
+        self.password = password
+        self.auction_money = auction_money
+
+class Item(db.Model):
+    __tablename = "item"
+    item_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable= False)
+    description = db.Column(db.String, nullable= False)
+    start_date = db.Column(db.DateTime)
+    users_id = db.Column(db.Integer,db.ForeignKey("Users.id"))
+    def __init__(self, item_id, name, description, start_date):
+        self.item_id = item_id
+        self.name = name
+        self.description = description
+        self.start_date = start_date
+
+    def show_user(self):
+        query_result = User.query.filter(User.auctioning.any()).all()
+        id_all = []
+        bid_money = 0
+        for bidder in query_result:
+            if bidder.auction_money > bid_money:
+                bid_money = bidder.auction_money
+                id_all = []
+                id_all.append(bidder.id)
+        return str(id_all)
+
+class Bid(db.Model):
+    bid_id = db.Column(db.Integer, primary_key=True)
+    bid_price = db.Column(db.Float,nullable=False)
+
+
+
+
+#test
+user1 = User(1,"abc","xyz",1000)
+user2 = User(2,"qwe","fgh",200)
+user3 = User(3,"cbv","qwr",4000)
+item1 = Item(4,"Ball","old-ball",20/11)
+
+user1.auctioning.append(item1)
+user2.auctioning.append(item1)
+item1.show_user()
